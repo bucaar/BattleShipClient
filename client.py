@@ -3,6 +3,7 @@
 import socket
 import random
 import json
+import sys
 
 MY_SHOTS = [[None for r in range(10)] for c in range(10)]
 OPPONENT_SHOTS = []
@@ -45,13 +46,13 @@ def process_input(data):
     return get_shot_location()
   
   elif data == "MISS":
-    MY_SHOTS[LAST_SHOT[0]][LAST_SHOT[1]] = "MISS"
+    MY_SHOTS[LAST_SHOT[0]][LAST_SHOT[1]] = data
   
   elif data == "HIT":
-    MY_SHOTS[LAST_SHOT[0]][LAST_SHOT[1]] = "HIT"
+    MY_SHOTS[LAST_SHOT[0]][LAST_SHOT[1]] = data
   
-  elif data == "SUNK":
-    MY_SHOTS[LAST_SHOT[0]][LAST_SHOT[1]] = "SUNK"
+  elif data[:4] == "SUNK":
+    MY_SHOTS[LAST_SHOT[0]][LAST_SHOT[1]] = data
   
   elif data[:13] == "OPPONENT SHOT":
     tokens = data[14:].split(",")
@@ -68,11 +69,11 @@ def process_input(data):
     
   return None
 
-def main():
+def main(args):
   sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
   
-  host = 'localhost'
-  port = 4948
+  host = args["h"]
+  port = args["p"]
   
   sock.connect((host, port))
   
@@ -87,5 +88,19 @@ def main():
       
   sock.close()
       
+
+def get_args():
+  args = {"h": "localhost", "p": 4949}
+  for i in range(len(sys.argv)):
+    if sys.argv[i][0] == "-":
+      arg = sys.argv[i+1] if i+1 < len(sys.argv) else ""
+      try:
+        arg = int(arg)
+      except:
+        pass
+      args[sys.argv[i][1]] = arg
+  return args
+
 if __name__ == "__main__":
-  main()
+  args = get_args()
+  main(args)
