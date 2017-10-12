@@ -79,12 +79,13 @@ def main(args):
   
   while True:
     data = sock.recv(4096).decode("utf-8").strip()
-    print(data)
-    response = process_input(data)
-    if response is False:
-      break
-    if response:
-      sock.sendall(response.encode("utf-8"))
+    for command in data.split("\r\n"):
+      print(command)
+      response = process_input(command)
+      if response is False:
+        break
+      if response:
+        sock.sendall(response.encode("utf-8"))
       
   sock.close()
       
