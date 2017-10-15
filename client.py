@@ -77,12 +77,14 @@ def main(args):
   
   sock.connect((host, port))
   
-  while True:
+  running = True
+  while running:
     data = sock.recv(4096).decode("utf-8").strip()
-    for command in data.split("\r\n"):
+    for command in data.split("\n"):
       print(command)
       response = process_input(command)
       if response is False:
+        running = False
         break
       if response:
         sock.sendall(response.encode("utf-8"))
